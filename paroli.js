@@ -10,14 +10,16 @@ $(document).ready(function() {
 });
 
 function startSolving() {
-  var words = handleUserInput();
-  console.log(buildTextArray().toString());
-}
+  var words = handleUserWordInput();
+  var hints = handleUserHintInput();
+  var textArray = buildTextArray(hints);
+  var permutation = 0;
+  
+} 
 
-function handleUserInput() {
+function handleUserWordInput() {
   // check words and save in cooky
   var words = new Array(nofWords);
-  var wordsOk = new Boolean(true);
   
   for (var i=0; i<nofWords; i++) {
     var textinput = $('input[name="w'+i+'"]');
@@ -25,7 +27,6 @@ function handleUserInput() {
     textinput.removeClass('ok error');
     if (word.length<wordLenghts) {
       textinput.addClass('error');
-      wordsOk = new Boolean(false);
     }
     else {
       textinput.addClass('ok');
@@ -36,6 +37,25 @@ function handleUserInput() {
   $.cookie('words', $.toJSON( words ));
   
   return words;
+}
+
+function handleUserHintInput() {
+  var formArray = buildFormArray();
+  var hints = new Array();
+
+  for (var x=0; x<formArray.length; x++) {
+    for (var y=0; y<formArray[x].length; y++) {
+      var letter = $('input[name="r'+y+'c'+x+'"]').val();
+      if (formArray[y][x]=='x' && letter!=null && letter!='') {
+        hints.push(new Hint(y, x, letter));
+        $('#paroli-table > tbody > tr#r'+y+' > td#c'+x).append( $('<input type=text size="1" maxLength="1" name="r'+y+'c'+x+'">'));
+      }
+    }
+  }
+  
+  $.cookie('hints', $.toJSON( hints ));
+  
+  return hints;
 }
 
 function buildTable() {
@@ -62,6 +82,8 @@ function buildTable() {
 
 function buildTableForm() {
   var formArray = buildFormArray();
+  var h = $.cookie('hints');
+  var hints = $.evalJSON(h);
 
   for (var x=0; x<formArray.length; x++) {
     for (var y=0; y<formArray[x].length; y++) {
@@ -70,14 +92,20 @@ function buildTableForm() {
       }
     }
   }
-
+  
+  if (hints!=null) {
+    for (var i=0; i<hints.length; i++) {
+      $('input[name="r'+hints[i].row+'c'+hints[i].column+'"]').val(hints[i].letter);
+    }
+  }
+  
 }
 
 function buildWordsForm() {
   var c = $.cookie('words');
   var words = $.evalJSON(c);
   for (var i=0; i<nofWords; i++) {
-    $('#words-div').append($('<p><input class="ok" type="text" size="'+wordLenghts+'" maxLength="'+wordLenghts+'" name="w'+i+'"/></p>'))
+    $('#words-div').append($('<p><input class="ok" type="text" size="'+wordLenghts+'" maxLength="'+wordLenghts+'" name="w'+i+'"/></p>'));
     if (words[i] != null) {
       $('input[name="w'+i+'"]').val(words[i]);
     }
@@ -88,24 +116,10 @@ function buildSolveButton() {
   $('#paroli-form').append($('<input type="button" name="paroli-solve" value="L&ouml;sen" />'));
   $('input[name="paroli-solve"]').click(function() {
     startSolving();
-  })
+  });
 }
 
-function buildTextArray() {
-  // var textArray = [
-  //   ['', '', '', '', '', '', '', '', '', '', ''],
-  //   ['', '', '', '', '', '', '', '', '', '', ''],
-  //   ['', '', '', '', '', '', '', '', '', '', ''],
-  //   ['', '', '', '', '', '', '', '', '', '', ''],
-  //   ['', '', '', '', '', '', '', '', '', '', ''],
-  //   ['', '', '', '', '', '', '', '', '', '', ''],
-  //   ['', '', '', '', '', '', '', '', '', '', ''],
-  //   ['', '', '', '', '', '', '', '', '', '', ''],
-  //   ['', '', '', '', '', '', '', '', '', '', ''],
-  //   ['', '', '', '', '', '', '', '', '', '', ''],
-  //   ['', '', '', '', '', '', '', '', '', '', ''],
-  // ];
-  
+function buildTextArray(hints) {
   var textArray = buildFormArray();
   for (var x=0; x<textArray.length; x++) {
     for (var y=0; y<textArray[x].length; y++) {
@@ -115,6 +129,12 @@ function buildTextArray() {
       else {
         textArray[y][x]='x';
       }
+    }
+  }
+  
+  if (hints!=null) {
+    for (var i=0; i<hints.length; i++) {
+      textArray[hints[i].row][hints[i].column] = hints[i].letter;
     }
   }
   
@@ -138,3 +158,8 @@ function buildFormArray() {
   return textArray;
 }
 
+function Hint(row, column, letter) {
+  this.row = row;
+  this.column = column;
+  this.letter = letter;
+}
