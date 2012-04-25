@@ -29,21 +29,24 @@ function tryWord(pos, words, used, inTextArray) {
         showResult(myTextArray);
         // next word does fit
         used[i] = Boolean(true);
-        if (pos<nofWords) {
+        if (pos<(nofWords-1)) {
           if (!tryWord(pos+1, words, used, myTextArray)) {
             // reset used since it was not successfull
             used[i] = Boolean(false);
             myTextArray = cloneArray(inTextArray);
             // is there an other unused word to try with?
+            showResult(myTextArray);
             continue;
           }
           else {
-            showResult(myTextArray);
+            copyArray(inTextArray, myTextArray);
             return Boolean(true);
           }
         }
         else {
           console.log("yes, we found the solution");
+          copyArray(inTextArray, myTextArray);
+          return Boolean(true);
         }
       }
       else {
@@ -54,6 +57,7 @@ function tryWord(pos, words, used, inTextArray) {
     }
   }
   // no word does fit => fall back
+  showResult(myTextArray);
   return Boolean(false);
 }
 
@@ -97,7 +101,7 @@ function tryFillWord(pos, word, textArray) {
 function tryFillWordVertical(row, column, word, inTextArray) {
   var i = 0;
   var myTextArray = cloneArray(inTextArray);
-  for (var r=row; i<word.length && r<myTextArray.length; r++) {
+  for (var r=row; i<word.length && r<myTextArray[column].length; r++) {
     if (myTextArray[r][column]==' ' || myTextArray[r][column]==word[i]) {
       myTextArray[r][column]=word[i];
       i++;
@@ -110,10 +114,10 @@ function tryFillWordVertical(row, column, word, inTextArray) {
   return Boolean(true);
 }
 
-function tryFillWordHorizontal(row, column, word, textArray) {
+function tryFillWordHorizontal(row, column, word, inTextArray) {
   var i = 0;
   var myTextArray = cloneArray(inTextArray);
-  for (var c=column; r<myTextArray.length; c++) {
+  for (var c=column; i<word.length && c<myTextArray.length; c++) {
     if (myTextArray[row][c]==' ' || myTextArray[row][c]==word[i]) {
       myTextArray[row][c]=word[i];
       i++;
@@ -122,7 +126,7 @@ function tryFillWordHorizontal(row, column, word, textArray) {
       return Boolean(false);
     }
   }
-  textArray = myTextArray;
+  copyArray(myTextArray, inTextArray);
   return Boolean(true);
 }
 
@@ -174,7 +178,6 @@ function showResult(textArray) {
       }
     }
   }
-
 }
 
 function buildTable() {
@@ -272,7 +275,7 @@ function buildFormArray() {
     [' ', ' ', ' ', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x'],
     [' ', ' ', ' ', ' ', 'x', ' ', 'x', ' ', ' ', ' ', ' '],
     [' ', ' ', ' ', ' ', 'x', ' ', 'x', ' ', ' ', ' ', ' '],
-    [' ', ' ', ' ', ' ', 'x', ' ', 'x', ' ', ' ', ' ', ' '],
+    [' ', ' ', ' ', ' ', 'x', ' ', 'x', ' ', ' ', ' ', ' ']
   ];
   return textArray;
 }
