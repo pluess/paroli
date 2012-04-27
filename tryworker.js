@@ -9,9 +9,9 @@ onmessage = function(event) {
     used[i] = Boolean(false);
   }
 
-  debugger;
   tryWord(0, event.data.words, used, event.data.textArray);
 
+  self.postMessage('done!');
 };
 
 function tryWord(pos, words, used, inTextArray) {
@@ -120,7 +120,6 @@ function tryFillWordHorizontal(row, column, word, inTextArray) {
 
 function postResult(textArray) {
   self.postMessage(textArray);
-  pause(5);
 }
 
 /**

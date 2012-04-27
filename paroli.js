@@ -1,6 +1,8 @@
 var dimension = 11;
 var nofWords = 10;
 var wordLenghts = 8;
+var gTextArray = null;
+var interval = null;
   
 $(document).ready(function() {
   buildTable();
@@ -18,7 +20,13 @@ function startSolving() {
   var worker = new Worker("tryworker.js");
   
   worker.onmessage = function(event) {
-    showResult(event.data);
+    if ($.isArray(event.data)) {
+      storeResult(event.data);
+    }
+    else {
+      // we are done
+      clearInterval(interval);
+    }
   };
   
   worker.postMessage(
@@ -27,6 +35,9 @@ function startSolving() {
         textArray: textArray
       }
   );
+  
+  interval = setInterval("displayResult()", 5);
+  
 }
 
 function handleUserWordInput() {
@@ -69,6 +80,10 @@ function handleUserHintInput() {
   return hints;
 }
 
+function storeResult(inTextArray) {
+  gTextArray = inTextArray;
+}
+
 function showResult(textArray) {
   for (var c=0; c<textArray.length; c++) {
     for (var r=0; r<textArray[c].length; r++) {
@@ -76,6 +91,12 @@ function showResult(textArray) {
         $('input[name="r'+r+'c'+c+'"]').val(textArray[r][c]);
       }
     }
+  }
+}
+
+function displayResult() {
+  if (gTextArray!=null) {
+    showResult(gTextArray);
   }
 }
 
