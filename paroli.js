@@ -1,4 +1,14 @@
 var displayResult;
+var path;
+
+// get path to source
+(function () {
+	var scr=document.getElementsByTagName('script');
+	var src=scr[scr.length-1].getAttribute("src");
+
+	var pos = src.search(/paroli.js/);
+    path = src.slice(0, pos);
+})();
 
 (function ($) {
   
@@ -21,7 +31,7 @@ var displayResult;
     var hints = handleUserHintInput();
     var textArray = buildTextArray(hints);
   
-    var worker = new Worker("tryworker.js");
+    var worker = new Worker(path+"/tryworker.js");
     
     worker.onmessage = function(event) {
       if ($.isArray(event.data)) {
