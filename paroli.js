@@ -169,7 +169,7 @@ var path;
   }
   
   function buildSolveButton() {
-    $('#paroli-form').append($('<input type="button" name="paroli-solve" value="L&ouml;sen" />'));
+    $('#paroli-form').append($('<input id="paroli-solve" type="button" name="paroli-solve" value="L&ouml;sen" />'));
     $('input[name="paroli-solve"]').click(function() {
       startSolving();
     });
