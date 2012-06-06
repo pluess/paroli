@@ -30,6 +30,12 @@ var path;
     var words = handleUserWordInput();
     var hints = handleUserHintInput();
     var textArray = buildTextArray(hints);
+    
+    // are we ready to start?
+    if (words[nofWords-1]==undefined || words[nofWords-1].length<wordLenghts) {
+    	// at least one word was not ok or not filled in.
+    	return;
+    }
   
     var worker = new Worker(path+"/tryworker.js");
     
@@ -73,7 +79,9 @@ var path;
       }
       else {
         textinput.addClass('ok');
+        word = word.toUpperCase();
         words[i] = word;
+        textinput.val(word);
       }
     }
     
@@ -170,8 +178,14 @@ var path;
   
   function buildSolveButton() {
     $('#paroli-form').append($('<input id="paroli-solve" type="button" name="paroli-solve" value="L&ouml;sen" />'));
+    $('#paroli-form').append($('<input id="paroli-clear" type="button" name="paroli-clear" value="Neu beginnen" />'));
     $('input[name="paroli-solve"]').click(function() {
       startSolving();
+    });
+    $('input[name="paroli-clear"]').click(function() {
+    	$.cookie('words', null);
+    	$.cookie('hints', null);
+    	window.location.reload();
     });
   }
   

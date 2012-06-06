@@ -5,3 +5,7 @@
 .ok {
   border:1px solid black;
 }
+
+div#words-div input {
+	width: 100px;
+}
